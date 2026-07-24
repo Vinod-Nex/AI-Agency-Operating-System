@@ -4,14 +4,48 @@ An enterprise-grade, full-stack **AI Operating System** designed for modern digi
 
 ---
 
+## 📚 Complete Enterprise Documentation Index
+
+This project contains comprehensive enterprise-level architectural, product, design, and QA testing specifications:
+
+### 🎨 Design & User Experience
+- **[DESIGN.md](DESIGN.md)** — Glassmorphism UI tokens, color palettes, typography scale, micro-interactions, and accessibility standards.
+- **[UX Screen Inventory.md](UX%20Screen%20Inventory.md)** — Screen-by-screen UX wireframe breakdown and interactive component specifications.
+
+### 📋 Product & Requirements
+- **[Product Requirements Document.md](Product%20Requirements%20Document.md)** — Core product vision, target personas, and feature specifications.
+- **[ACCEPTANCE_CRITERIA.md](ACCEPTANCE_CRITERIA.md)** — Quantitative acceptance criteria and feature completion metrics.
+
+### 🧪 QA & Test Requirements (PRDs & Reports)
+- **[frontend_testing_prd.md](frontend_testing_prd.md)** — Front-End Testing PRD (WCAG 2.1 AA, Core Web Vitals, 30 TestSprite test cases).
+- **[backend_testing_prd.md](backend_testing_prd.md)** — Enterprise Backend Testing PRD (Spring Boot REST APIs, PostgreSQL, Redis, Security, JWT).
+- **[TESTING_STRATEGY.md](TESTING_STRATEGY.md)** — End-to-end testing matrix, unit/integration test coverage targets, and CI pipeline setup.
+- **[testsprite_tests/testsprite-mcp-test-report.md](testsprite_tests/testsprite-mcp-test-report.md)** — TestSprite AI MCP automated test execution report.
+
+### 🏗️ System & AI Architecture
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** — High-level enterprise microservices & Next.js 15 front-end architecture.
+- **[AI_ARCHITECTURE.md](AI_ARCHITECTURE.md)** — Multi-model prompt chaining engine, BYOK LLM routing (Claude, OpenAI, Gemini), and agentic workflows.
+- **[API_SPECIFICATION.md](API_SPECIFICATION.md)** — REST API endpoint schemas, request/response contracts, and error structures.
+
+### 🗄️ Database & Storage
+- **[DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)** — Relational PostgreSQL entity-relationship model and table definitions.
+- **[DATABASE_EVOLUTION_PLAN.md](DATABASE_EVOLUTION_PLAN.md)** — Database migration plan, indexing strategy, and Flyway versioning.
+
+### 🛠️ Developer & Engineering Guidelines
+- **[TECH_STACK.md](TECH_STACK.md)** — Technology stack selection rationale and framework choices.
+- **[FOLDER_STRUCTURE.md](FOLDER_STRUCTURE.md)** — Repository directory structure and module layout guide.
+- **[GIT_AND_RELEASE_STRATEGY.md](GIT_AND_RELEASE_STRATEGY.md)** — Git branching model, semantic versioning, and release checklist.
+
+---
+
 ## ⚡ Tech Stack & Architecture
 
 - **Core Framework**: [Next.js 15](https://nextjs.org/) (App Router, React 19)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling & Design Tokens**: [Tailwind CSS](https://tailwindcss.com/) with a custom Glassmorphism dark design system
+- **Styling & Design Tokens**: [Tailwind CSS](https://tailwindcss.com/) with custom Glassmorphism dark theme
 - **Iconography**: [Lucide React](https://lucide.dev/)
 - **Automated Testing Engine**: [TestSprite AI Testing Engine (MCP)](https://www.testsprite.com/) + [Playwright](https://playwright.dev/)
-- **Accessibility Compliance**: WCAG 2.1 Level AA (`role="progressbar"`, ARIA attributes, keyboard navigation)
+- **Accessibility Compliance**: WCAG 2.1 Level AA (`role="progressbar"`, ARIA attributes, focus indicators)
 
 ---
 
@@ -92,22 +126,6 @@ An enterprise-grade, full-stack **AI Operating System** designed for modern digi
    npm run build
    npm run start
    ```
-
----
-
-## 🧪 Testing & Quality Assurance
-
-This repository includes a standardized testing suite and PRDs verified using the **TestSprite MCP AI Testing Engine**:
-
-- **Front-End Testing PRD**: [frontend_testing_prd.md](frontend_testing_prd.md)
-- **Backend Testing PRD**: [backend_testing_prd.md](backend_testing_prd.md)
-- **TestSprite Execution Report**: [testsprite_tests/testsprite-mcp-test-report.md](testsprite_tests/testsprite-mcp-test-report.md)
-
-### Running TestSprite Suite
-```bash
-# Execute frontend test plan via TestSprite MCP server
-node node_modules/@testsprite/testsprite-mcp/dist/index.js generateCodeAndExecute
-```
 
 ---
 
