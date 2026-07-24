@@ -1,0 +1,869 @@
+[
+  {
+    "id": "TC001",
+    "title": "Browse the landing page and enter the workspace",
+    "description": "This verifies a visitor can review the landing page value proposition and launch the workspace to reach the dashboard.",
+    "category": "AI Agency Landing Page",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify product value proposition content is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify pricing or testimonial content is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Click the primary workspace launch action"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Explore landing page and enter the workspace",
+    "description": "A visitor can review the landing page content and use a primary call to action to reach the dashboard.",
+    "category": "Landing Page Navigation & CTAs",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll through the landing page"
+      },
+      {
+        "type": "action",
+        "description": "Scroll through the pricing section"
+      },
+      {
+        "type": "action",
+        "description": "Click the primary call to action to enter the workspace"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify executive KPI content is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Generate an invoice with multiple line items and send it",
+    "description": "This verifies a user can enter billing details, add line items, calculate totals, and create and send an invoice.",
+    "category": "AI Invoice & Stripe Billing Builder",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /invoices"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the client name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the invoice item details"
+      },
+      {
+        "type": "action",
+        "description": "Add a line item with quantity and unit price"
+      },
+      {
+        "type": "action",
+        "description": "Add another line item with quantity and unit price"
+      },
+      {
+        "type": "action",
+        "description": "Click to create and send the invoice"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the invoice total is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a sent invoice confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "View dashboard metrics overview",
+    "description": "An executive can open the dashboard and see the main agency performance summary at a glance.",
+    "category": "Executive Dashboard Overview",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify KPI summary content is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify overall agency performance metrics are visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Generate a proposal from client requirements",
+    "description": "A sales user can enter proposal details and generate a proposal preview that reflects the supplied requirements.",
+    "category": "AI Proposal Generator",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /proposals"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the client name field with a valid client name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the project scope field with a valid project scope"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the budget field with a valid budget"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the delivery timeline field with a valid timeline"
+      },
+      {
+        "type": "action",
+        "description": "Generate the proposal"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a generated proposal preview is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the proposal preview includes the entered requirements"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Review the dashboard KPI overview",
+    "description": "This verifies a user can open the dashboard and see executive KPI metrics and summary data needed for agency oversight.",
+    "category": "AI Agency Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify executive KPI metrics are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify active performance summary data is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Update and save agency settings",
+    "description": "An operations user can change agency profile and preference settings and save the updated configuration successfully.",
+    "category": "Agency Settings & Preferences",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "action",
+        "description": "Update agency profile information"
+      },
+      {
+        "type": "action",
+        "description": "Toggle notification preferences"
+      },
+      {
+        "type": "action",
+        "description": "Change team role and integration settings"
+      },
+      {
+        "type": "action",
+        "description": "Save the updated preferences"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated settings summary is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the saved configuration is reflected on the page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Reach the dashboard from pricing content",
+    "description": "A visitor can review pricing information and still launch into the workspace from the landing page.",
+    "category": "Landing Page Navigation & CTAs",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the pricing section"
+      },
+      {
+        "type": "action",
+        "description": "Click the workspace launch call to action"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify executive KPI content is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Generate a contract and access the signature link",
+    "description": "This verifies a user can configure contract terms, generate the agreement, and reach the e-signature link from the contract builder.",
+    "category": "AI Contract & MSA Builder",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contracts"
+      },
+      {
+        "type": "action",
+        "description": "Select a contract agreement type"
+      },
+      {
+        "type": "action",
+        "description": "Select an IP ownership option"
+      },
+      {
+        "type": "action",
+        "description": "Click to generate the contract"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a generated contract summary is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an e-signature link is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Review invoice totals before sending",
+    "description": "This verifies a user can fill billing details, review subtotal, tax, and total calculations, and then create and send the invoice.",
+    "category": "AI Invoice & Stripe Billing Builder",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /invoices"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the client name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill in billing details"
+      },
+      {
+        "type": "action",
+        "description": "Add multiple line items with quantity and unit price"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the subtotal is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the tax amount and final total are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Click to create and send the invoice"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a sent invoice confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Inspect dashboard charts and project progress",
+    "description": "An executive can review dashboard charts and project progress indicators to understand agency performance.",
+    "category": "Executive Dashboard Overview",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify visual chart content is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify project progress information is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Review contract terms before sharing",
+    "description": "This verifies a user can choose agreement terms, generate a contract, and review the resulting summary and signature link.",
+    "category": "AI Contract & MSA Builder",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contracts"
+      },
+      {
+        "type": "action",
+        "description": "Choose contract agreement terms"
+      },
+      {
+        "type": "action",
+        "description": "Click to generate the contract"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a contract summary is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an e-signature link is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Sync sprint status updates",
+    "description": "An engineering lead can trigger a sprint sync and see the board summary reflect the updated sprint information.",
+    "category": "Jira Integration Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /jira"
+      },
+      {
+        "type": "action",
+        "description": "Sync sprint status updates"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify updated sprint information is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the board summary changes"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC014",
+    "title": "View Jira sprint metrics overview",
+    "description": "An engineering lead can open the Jira dashboard and review sprint metrics, ticket distribution, and epic progress.",
+    "category": "Jira Integration Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /jira"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify sprint metrics are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify ticket distribution and epic progress information are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC015",
+    "title": "Search and open a client record",
+    "description": "This verifies a user can search the client directory, find a matching client, and open the client card for details.",
+    "category": "Client CRM Directory",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /clients"
+      },
+      {
+        "type": "action",
+        "description": "Search for a client by name"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify matching clients are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Open a matching client card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the client card details are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC016",
+    "title": "Review revenue and active project summary on the dashboard",
+    "description": "An executive can confirm monthly recurring revenue and active project information are shown together on the dashboard.",
+    "category": "Executive Dashboard Overview",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify monthly recurring revenue content is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify active project metrics are visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC017",
+    "title": "View project status overview",
+    "description": "A delivery manager can open the project tracker and see active project status cards with milestone, team, budget, and deadline information.",
+    "category": "Project Milestone Tracker",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /projects"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify active project status cards are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify milestone progress, team assignments, budget consumption, and deadline information are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC018",
+    "title": "Filter clients by status",
+    "description": "This verifies a user can filter the directory by client status and see the list update to the matching records.",
+    "category": "Client CRM Directory",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /clients"
+      },
+      {
+        "type": "action",
+        "description": "Select a client status filter"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the client list is filtered to matching records"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC019",
+    "title": "Inspect Jira issue distribution by epic",
+    "description": "An engineering lead can review how issues are distributed across epics and confirm the summary remains readable for planning.",
+    "category": "Jira Integration Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /jira"
+      },
+      {
+        "type": "action",
+        "description": "Open the epic progress view"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify epic progress information is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify issue counts are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC020",
+    "title": "Filter projects by in-progress status",
+    "description": "A delivery manager can filter the project list to in-progress work and see the displayed projects update accordingly.",
+    "category": "Project Milestone Tracker",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /projects"
+      },
+      {
+        "type": "action",
+        "description": "Filter projects to in-progress status"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the displayed projects match the selected status group"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify active project details remain visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC021",
+    "title": "Adjust notification and API credential preferences",
+    "description": "An operations user can modify notification and credential-related preferences and confirm the settings view reflects the new choices.",
+    "category": "Agency Settings & Preferences",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "action",
+        "description": "Toggle notification settings"
+      },
+      {
+        "type": "action",
+        "description": "Update API credential preferences"
+      },
+      {
+        "type": "action",
+        "description": "Save the updated preferences"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the settings summary updates"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify notification and credential preferences are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC022",
+    "title": "Regenerate a proposal after changing requirements",
+    "description": "A sales user can update proposal inputs and generate a refreshed draft that reflects the new project details.",
+    "category": "AI Proposal Generator",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /proposals"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the client name field with a valid client name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the project scope field with an initial project scope"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the budget field with a valid budget"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the delivery timeline field with a valid timeline"
+      },
+      {
+        "type": "action",
+        "description": "Generate the proposal"
+      },
+      {
+        "type": "action",
+        "description": "Update the project scope field with a different valid scope"
+      },
+      {
+        "type": "action",
+        "description": "Generate the proposal again"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the proposal preview updates after regeneration"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the refreshed preview reflects the updated requirements"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC023",
+    "title": "Switch between project status groups",
+    "description": "A delivery manager can move between project status groups and review different sets of projects without leaving the tracker.",
+    "category": "Project Milestone Tracker",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /projects"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the review status group"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the completed status group"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the project list updates for the selected status group"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify milestone and deadline information is still displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC024",
+    "title": "Review budget and deadline details for a project",
+    "description": "A delivery manager can inspect project cards to confirm budget consumption and deadline dates are visible for active work.",
+    "category": "Project Milestone Tracker",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /projects"
+      },
+      {
+        "type": "action",
+        "description": "Select an active project card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify budget consumption information is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify deadline information is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC025",
+    "title": "Review team role configuration",
+    "description": "A manager can open the settings page and inspect the team role configuration used for agency access and responsibilities.",
+    "category": "Agency Settings & Preferences",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "action",
+        "description": "Review the team role settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify team role configuration is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify integration settings are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC026",
+    "title": "Review landing page value proposition content",
+    "description": "A visitor can browse the landing page sections that explain the product value, pricing, and social proof.",
+    "category": "Landing Page Navigation & CTAs",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll through the page content"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify feature information is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify pricing information is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC027",
+    "title": "Prevent saving settings with missing required fields",
+    "description": "A user sees validation feedback when attempting to save settings after clearing required profile information.",
+    "category": "Agency Settings & Preferences",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "action",
+        "description": "Clear a required agency profile field"
+      },
+      {
+        "type": "action",
+        "description": "Save the updated preferences"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation error is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the settings are not saved"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC028",
+    "title": "See required proposal fields before generating",
+    "description": "A sales user gets clear validation feedback when trying to generate a proposal without the required inputs.",
+    "category": "AI Proposal Generator",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /proposals"
+      },
+      {
+        "type": "action",
+        "description": "Generate the proposal without entering the required fields"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify proposal validation errors are visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify no generated proposal preview is displayed"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC029",
+    "title": "Handle an empty client search result",
+    "description": "This verifies a user can enter a search term with no matches and see an empty state instead of results.",
+    "category": "Client CRM Directory",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /clients"
+      },
+      {
+        "type": "action",
+        "description": "Search for a client name that does not match any record"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is displayed"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC030",
+    "title": "See empty Jira state when no sprint data is available",
+    "description": "A user can recognize a clear empty state when the Jira dashboard has no synced sprint data.",
+    "category": "Jira Integration Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /jira"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify sprint metrics are not shown"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC031",
+    "title": "Open project tracker with no active projects",
+    "description": "A user can see a clear empty state when there are no projects available in the tracker.",
+    "category": "Project Milestone Tracker",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /projects"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify project status filters are still available"
+      }
+    ],
+    "priority": "Low"
+  }
+]
