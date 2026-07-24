@@ -21,9 +21,11 @@ import {
   ChevronRight
 } from "lucide-react";
 
+import ThemeToggle from "@/components/ThemeToggle";
+
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#080c14] text-slate-100 flex flex-col selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#080c14] text-slate-900 dark:text-slate-100 flex flex-col selection:bg-blue-600 selection:text-white transition-colors">
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-blue-900/60 via-indigo-900/60 to-purple-900/60 border-b border-blue-500/20 py-2 px-4 text-center text-xs font-medium text-slate-200">
         <span className="inline-flex items-center gap-1.5 bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full border border-blue-400/30 text-[10px] font-bold uppercase tracking-wide mr-2">
@@ -42,22 +44,23 @@ export default function LandingPage() {
             <Zap className="w-6 h-6 text-white" />
           </div>
           <div>
-            <div className="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">
-              AgencyOS <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30">AI</span>
+            <div className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              AgencyOS <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold border border-blue-500/30">AI</span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">Enterprise AI Operating System</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Enterprise AI Operating System</p>
           </div>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-slate-400">
-          <a href="#features" className="hover:text-white transition-colors">Features</a>
-          <a href="#workflow" className="hover:text-white transition-colors">AI Workflow</a>
-          <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
-          <a href="#testimonials" className="hover:text-white transition-colors">Case Studies</a>
+        <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-slate-600 dark:text-slate-400">
+          <a href="#features" className="hover:text-blue-600 dark:hover:text-white transition-colors">Features</a>
+          <a href="#workflow" className="hover:text-blue-600 dark:hover:text-white transition-colors">AI Workflow</a>
+          <a href="#pricing" className="hover:text-blue-600 dark:hover:text-white transition-colors">Pricing</a>
+          <a href="#testimonials" className="hover:text-blue-600 dark:hover:text-white transition-colors">Case Studies</a>
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="text-xs font-semibold text-slate-300 hover:text-white transition-colors hidden sm:block">
+          <ThemeToggle />
+          <Link href="/dashboard" className="text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors hidden sm:block">
             Sign In
           </Link>
           <Link

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "AI Agency Operating System | Automate Your Entire Agency Workflow",
@@ -12,9 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="antialiased min-h-screen bg-[#080c14] text-slate-100 selection:bg-blue-600 selection:text-white">
-        {children}
+    <html lang="en" className="light">
+      <body className="antialiased min-h-screen bg-slate-50 text-slate-900 selection:bg-blue-600 selection:text-white light">
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
