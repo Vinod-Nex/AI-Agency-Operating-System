@@ -4,37 +4,39 @@ An enterprise-grade, full-stack **AI Operating System** designed for modern digi
 
 ---
 
-## 📚 Complete Enterprise Documentation Index
+## 📚 Production Architectural & Engineering Documentation Suite
 
-This project contains comprehensive enterprise-level architectural, product, design, and QA testing specifications:
+This project contains comprehensive enterprise-level architectural, product, design, database, API, DevOps, and QA testing specifications:
 
-### 🎨 Design & User Experience
-- **[DESIGN.md](DESIGN.md)** — Glassmorphism UI tokens, color palettes, typography scale, micro-interactions, and accessibility standards.
-- **[UX Screen Inventory.md](UX%20Screen%20Inventory.md)** — Screen-by-screen UX wireframe breakdown and interactive component specifications.
+### 🏗️ System Architecture & Mapping
+- **[system_architecture.md](system_architecture.md)** — C4 System Architecture, Component & Container Diagrams, Sequence Flows, and NFR targets.
+- **[frontend_backend_mapping.md](frontend_backend_mapping.md)** — Comprehensive screen-by-screen mapping for 22+ pages: REST endpoints, payloads, validation rules, loading/error states, retry & caching strategies.
 
-### 📋 Product & Requirements
-- **[Product Requirements Document.md](Product%20Requirements%20Document.md)** — Core product vision, target personas, and feature specifications.
-- **[ACCEPTANCE_CRITERIA.md](ACCEPTANCE_CRITERIA.md)** — Quantitative acceptance criteria and feature completion metrics.
+### 🗄️ Database & Schema Specifications
+- **[database_schema.md](database_schema.md)** — PostgreSQL 16 DDL, table definitions, constraints, foreign keys, B-tree/GIN composite indexes, soft deletes, and JSONB schemas.
+- **[entity_relationship_diagram.md](entity_relationship_diagram.md)** — Complete Mermaid ER diagram spanning Organizations, Users, Clients, Projects, Proposals, Contracts, Invoices, Jira Stories, and Audit Logs.
+- **[flyway_migrations.md](flyway_migrations.md)** — Flyway SQL migration scripts (`V1` to `V4`), checksum validation, and execution procedures.
 
-### 🧪 QA & Test Requirements (PRDs & Reports)
-- **[frontend_testing_prd.md](frontend_testing_prd.md)** — Front-End Testing PRD (WCAG 2.1 AA, Core Web Vitals, 30 TestSprite test cases).
-- **[backend_testing_prd.md](backend_testing_prd.md)** — Enterprise Backend Testing PRD (Spring Boot REST APIs, PostgreSQL, Redis, Security, JWT).
-- **[TESTING_STRATEGY.md](TESTING_STRATEGY.md)** — End-to-end testing matrix, unit/integration test coverage targets, and CI pipeline setup.
-- **[testsprite_tests/testsprite-mcp-test-report.md](testsprite_tests/testsprite-mcp-test-report.md)** — TestSprite AI MCP automated test execution report.
+### 🔌 API Architecture & Integration
+- **[api_integration_guide.md](api_integration_guide.md)** — OpenAPI 3.1 specification, JWT access/refresh token flows, RBAC authorization matrix, Axios/TanStack Query client interceptors, and global error handling.
 
-### 🏗️ System & AI Architecture
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** — High-level enterprise microservices & Next.js 15 front-end architecture.
-- **[AI_ARCHITECTURE.md](AI_ARCHITECTURE.md)** — Multi-model prompt chaining engine, BYOK LLM routing (Claude, OpenAI, Gemini), and agentic workflows.
-- **[API_SPECIFICATION.md](API_SPECIFICATION.md)** — REST API endpoint schemas, request/response contracts, and error structures.
+### ☁️ Cloud Deployment & DevOps
+- **[deployment_vercel_railway.md](deployment_vercel_railway.md)** — Option A Deployment: Vercel + Railway (Backend/PostgreSQL/Redis) + AWS S3.
+- **[deployment_vercel_aws.md](deployment_vercel_aws.md)** — Option B Deployment: Vercel + AWS ECS Fargate + RDS PostgreSQL + ElastiCache + CloudFront + S3.
+- **[github_actions_ci_cd.md](github_actions_ci_cd.md)** — Production GitHub Actions YAML workflows for CI, Docker builds, Playwright E2E, vulnerability scanning, and CD deployments.
+- **[docker_setup.md](docker_setup.md)** — Production multi-stage Dockerfiles for Spring Boot & Next.js, `docker-compose.yml` for local dev/staging, and non-root container security setup.
+- **[environment_variables.md](environment_variables.md)** — Complete inventory of all environment variables for Dev, Staging, and Production across Frontend, Backend, DB, Redis, and AWS.
 
-### 🗄️ Database & Storage
-- **[DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)** — Relational PostgreSQL entity-relationship model and table definitions.
-- **[DATABASE_EVOLUTION_PLAN.md](DATABASE_EVOLUTION_PLAN.md)** — Database migration plan, indexing strategy, and Flyway versioning.
+### 📊 Observability, Logging & Security
+- **[monitoring_strategy.md](monitoring_strategy.md)** — Prometheus metrics, Grafana dashboards, Spring Actuator `/actuator/health`, custom AI token metrics, and alerting rules.
+- **[logging_strategy.md](logging_strategy.md)** — Structured JSON logging (Loki/ELK), correlation/trace IDs, audit/security/AI log schemas, and retention policies.
+- **[observability_strategy.md](observability_strategy.md)** — OpenTelemetry distributed tracing architecture, W3C headers, span propagation, APM metrics, and incident response playbooks.
+- **[security_checklist.md](security_checklist.md)** — Enterprise security audit checklist (OWASP Top 10, TLS 1.3, AES-256 DB encryption, JWT security, CORS policies).
 
-### 🛠️ Developer & Engineering Guidelines
-- **[TECH_STACK.md](TECH_STACK.md)** — Technology stack selection rationale and framework choices.
-- **[FOLDER_STRUCTURE.md](FOLDER_STRUCTURE.md)** — Repository directory structure and module layout guide.
-- **[GIT_AND_RELEASE_STRATEGY.md](GIT_AND_RELEASE_STRATEGY.md)** — Git branching model, semantic versioning, and release checklist.
+### 🚀 Production Readiness & Operations
+- **[production_checklist.md](production_checklist.md)** — Comprehensive production readiness checklist across infrastructure, security, database, monitoring, and DR.
+- **[release_checklist.md](release_checklist.md)** — Pre-release, deployment execution, post-deployment smoke tests, semantic versioning (`v1.0.0`), and git tags.
+- **[rollback_strategy.md](rollback_strategy.md)** — Automated and manual rollback strategy for database migrations, backend micro-services, and frontend deployments.
 
 ---
 
@@ -42,57 +44,10 @@ This project contains comprehensive enterprise-level architectural, product, des
 
 - **Core Framework**: [Next.js 15](https://nextjs.org/) (App Router, React 19)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling & Design Tokens**: [Tailwind CSS](https://tailwindcss.com/) with custom Glassmorphism dark theme
+- **Styling & Design Tokens**: [Tailwind CSS](https://tailwindcss.com/) with custom Glassmorphism theme & Light/Dark Mode Context
 - **Iconography**: [Lucide React](https://lucide.dev/)
 - **Automated Testing Engine**: [TestSprite AI Testing Engine (MCP)](https://www.testsprite.com/) + [Playwright](https://playwright.dev/)
 - **Accessibility Compliance**: WCAG 2.1 Level AA (`role="progressbar"`, ARIA attributes, focus indicators)
-
----
-
-## 🌟 Core Modules & Features
-
-### 1. 📊 Executive AI Dashboard (`/dashboard`)
-- Real-time agency KPI metrics: Monthly Recurring Revenue (MRR), active client accounts, proposals delivered, win rates, and AI labor hours saved.
-- Active agency project progress cards with WCAG-compliant progress bar indicators (`role="progressbar"`).
-- Real-time AI system activity log and core module status grid.
-
-### 2. 📝 AI Proposal Generator (`/proposals`)
-- Input project parameters (Client Name, Budget, Timeline, Industry, Tech Stack, Scope).
-- Reactive live document preview synthesis with markdown support.
-- Built-in form validation error feedback when required details are missing (`Validation Error: Client Name is required`).
-- Copy text and export functionality.
-
-### 3. 📄 AI Legal SOW & Contract Generator (`/contracts`)
-- Seamless generation of Statements of Work (SOW) and Master Service Agreements (MSA).
-- Customizable IP ownership clauses and governing law options.
-- Dynamic e-signature URL generation and readiness status badges.
-
-### 4. 🧾 AI Invoice & Stripe Billing Builder (`/invoices`)
-- Itemized invoice creation with dynamic `+ Add Item` line additions.
-- Automated subtotal, 8% tax calculation, and grand total math.
-- Input validation blocking invalid rates/quantities ($\le 0$).
-- Invoice sent state management with persistent confirmation alert banners (`Invoice INV-2026-0042 Created and Sent`).
-
-### 5. 👥 360° Client CRM Directory (`/clients`)
-- Search clients by name, contact, or email with real-time case-insensitive filtering.
-- Status dropdown filters (`All`, `Active Contract`, `Onboarding`).
-- Interactive Client Detail Modal displaying linked project delivery metrics and account records.
-- Clean empty search state handling (`No client records match your search`).
-
-### 6. 💼 Agile Project Tracker (`/projects`)
-- Milestone status cards with budget consumption indicators and deadline dates.
-- Status filter toolbar buttons and `<select aria-label="Filter project status">` dropdown (`All`, `In Progress`, `In Review`, `Completed`, `Planning`).
-
-### 7. 🎯 Jira Integration Dashboard (`/jira`)
-- Sprint health metrics (42 Story Points) and ticket status distribution (To Do, In Progress, Done).
-- Jira Epic progress breakdown bars (e.g., `Enterprise Auth & Profile: 75%`).
-- Sprint status synchronization feedback (`Sprint status updates synchronized with Atlassian Cloud!`).
-
-### 8. ⚙️ Agency Settings & BYOK AI Configuration (`/settings`)
-- Agency profile branding and currency settings.
-- BYOK (Bring Your Own Key) model configuration (Anthropic Claude, OpenAI, Google Gemini).
-- Team Members & Role Access panel with dynamic role selection dropdowns (`Owner / Admin`, `Lead Architect`, `Senior Engineer`, `UX Designer`, `Viewer`).
-- Notification preference checkboxes (Email Digest, Slack/Jira Webhooks, Executive Summaries).
 
 ---
 

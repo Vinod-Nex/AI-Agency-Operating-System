@@ -1,539 +1,248 @@
-# Enterprise PostgreSQL Database Schema Specification
+# Enterprise PostgreSQL 16 Database Schema Specification
 ## AI Agency Operating System (AgencyOS)
 
 ---
 
-## 1. Entity Relationship (ER) Diagram
+## 1. Executive Summary & Design Principles
 
-```mermaid
-erDiagram
-    ORGANIZATIONS ||--o{ WORKSPACES : owns
-    ORGANIZATIONS ||--o{ USERS : employs
-    ORGANIZATIONS ||--o{ CLIENTS : manages
-    ORGANIZATIONS ||--o{ SUBSCRIPTIONS : billed_for
-    ORGANIZATIONS ||--o{ API_KEYS : configures
-    WORKSPACES ||--o{ PROJECTS : contains
-    CLIENTS ||--o{ PROJECTS : owns
-    CLIENTS ||--o{ PROPOSALS : receives
-    CLIENTS ||--o{ SOWS : signs
-    CLIENTS ||--o{ CONTRACTS : executes
-    CLIENTS ||--o{ INVOICES : billed_to
-    PROJECTS ||--o{ TASKS : consists_of
-    PROJECTS ||--o{ MEETINGS : schedules
-    PROJECTS ||--o{ FILES : stores
-    PROPOSALS ||--o{ SOWS : converts_to
-    SOWS ||--o{ CONTRACTS : generates
-    SOWS ||--o{ INVOICES : milestones
-    INVOICES ||--o{ PAYMENTS : settles
-    USERS ||--o{ ACTIVITIES : logs
-    USERS ||--o{ NOTIFICATIONS : receives
-    USERS ||--o{ COMMENTS : posts
-    PROPOSALS ||--o{ APPROVALS : requires
-    CONTRACTS ||--o{ APPROVALS : requires
-```
+The **AI Agency Operating System** uses **PostgreSQL 16** as its primary transactional store.
+The schema adheres to the following strict database design standards:
+1. **Multi-Tenancy Isolation**: Shared database, separate schema or strict `organization_id` foreign key scoping across all tenant tables.
+2. **Primary Key Strategy**: All primary keys use `UUID v4` (`gen_random_uuid()`) to prevent enumeration attacks and support distributed ID generation.
+3. **Auditability**: Every table includes standard audit columns (`created_at`, `created_by`, `updated_at`, `updated_by`).
+4. **Soft Deletes**: Deletions are logical via `deleted_at TIMESTAMP WITH TIME ZONE NULL` and `is_deleted BOOLEAN DEFAULT FALSE`.
+5. **JSONB Usage**: Flexible document structures (AI prompt metadata, line items, BYOK key configurations) use PostgreSQL `JSONB` with GIN indexing for fast querying.
+6. **Indexing Strategy**: B-Tree composite indexes on `(organization_id, status, created_at DESC)` for high-throughput pagination.
 
 ---
 
-## 2. PostgreSQL Enums
+## 2. Complete PostgreSQL 16 DDL
 
 ```sql
-CREATE TYPE user_role_enum AS ENUM (
-    'SUPER_ADMIN', 
-    'AGENCY_OWNER', 
-    'AGENCY_ADMIN', 
-    'PROJECT_MANAGER', 
-    'DEVELOPER', 
-    'QA_ENGINEER', 
-    'FINANCE_MANAGER', 
-    'CLIENT_USER'
-);
+-- PostgreSQL 16 Database Schema Initialization
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE TYPE plan_tier_enum AS ENUM (
-    'STARTER', 
-    'PROFESSIONAL', 
-    'AGENCY_SCALE', 
-    'ENTERPRISE'
-);
-
-CREATE TYPE doc_status_enum AS ENUM (
-    'DRAFT', 
-    'PENDING_REVIEW', 
-    'APPROVED', 
-    'SENT_TO_CLIENT', 
-    'SIGNED', 
-    'REJECTED', 
-    'EXPIRED'
-);
-
-CREATE TYPE payment_status_enum AS ENUM (
-    'PENDING', 
-    'PROCESSING', 
-    'PAID', 
-    'FAILED', 
-    'REFUNDED'
-);
-
-CREATE TYPE task_priority_enum AS ENUM (
-    'LOW', 
-    'MEDIUM', 
-    'HIGH', 
-    'URGENT'
-);
-
-CREATE TYPE ai_provider_enum AS ENUM (
-    'ANTHROPIC', 
-    'OPENAI', 
-    'GOOGLE_GEMINI'
-);
-```
-
----
-
-## 3. Comprehensive DDL Table Definitions (27 Tables)
-
-### Table 1: `organizations` (Tenants)
-```sql
+-- ====================================================================
+-- 1. ORGANIZATIONS (Tenants)
+-- ====================================================================
 CREATE TABLE organizations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    slug VARCHAR(100) UNIQUE NOT NULL,
-    logo_url TEXT,
-    custom_domain VARCHAR(255),
-    plan_tier plan_tier_enum DEFAULT 'STARTER',
+    name VARCHAR(150) NOT NULL,
+    slug VARCHAR(150) NOT NULL UNIQUE,
+    primary_email VARCHAR(255) NOT NULL,
+    default_currency VARCHAR(10) NOT NULL DEFAULT 'USD',
+    subscription_tier VARCHAR(50) NOT NULL DEFAULT 'PROFESSIONAL', -- STARTER, PROFESSIONAL, ENTERPRISE
+    subscription_status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',    -- TRIAL, ACTIVE, PAST_DUE, CANCELLED
     stripe_customer_id VARCHAR(100) UNIQUE,
-    metadata JSONB DEFAULT '{}'::jsonb,
-    is_deleted BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    ai_keys_config JSONB DEFAULT '{}'::jsonb,                     -- BYOK encrypted keys
+    notification_settings JSONB DEFAULT '{"email": true, "slack": true}'::jsonb,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by UUID,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by UUID
 );
-CREATE INDEX idx_orgs_slug ON organizations(slug);
-```
 
-### Table 2: `workspaces`
-```sql
-CREATE TABLE workspaces (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    code VARCHAR(50) NOT NULL,
-    description TEXT,
-    is_default BOOLEAN DEFAULT FALSE,
-    is_deleted BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(organization_id, code)
-);
-CREATE INDEX idx_workspaces_org ON workspaces(organization_id);
-```
+CREATE INDEX idx_organizations_slug ON organizations (slug) WHERE is_deleted = FALSE;
+CREATE INDEX idx_organizations_stripe_cust ON organizations (stripe_customer_id);
 
-### Table 3: `users`
-```sql
+-- ====================================================================
+-- 2. USERS & ACCOUNTS
+-- ====================================================================
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255),
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
-    avatar_url TEXT,
-    phone_number VARCHAR(50),
-    is_active BOOLEAN DEFAULT TRUE,
-    mfa_enabled BOOLEAN DEFAULT FALSE,
-    mfa_secret VARCHAR(255),
-    is_deleted BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'ROLE_MEMBER', -- ROLE_ADMIN, ROLE_MANAGER, ROLE_MEMBER, ROLE_VIEWER
+    avatar_url VARCHAR(500),
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    last_login_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by UUID,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by UUID
 );
-CREATE INDEX idx_users_org_email ON users(organization_id, email);
-```
 
-### Table 4: `roles`
-```sql
-CREATE TABLE roles (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
-    name VARCHAR(100) NOT NULL,
-    code user_role_enum NOT NULL,
-    description TEXT,
-    is_system BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
+CREATE INDEX idx_users_org_role ON users (organization_id, role) WHERE is_deleted = FALSE;
+CREATE INDEX idx_users_email ON users (email);
 
-### Table 5: `permissions`
-```sql
-CREATE TABLE permissions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    resource VARCHAR(100) NOT NULL,
-    action VARCHAR(50) NOT NULL,
-    description TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(resource, action)
-);
-```
-
-### Table 6: `role_permissions` (M:N)
-```sql
-CREATE TABLE role_permissions (
-    role_id UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
-    permission_id UUID NOT NULL REFERENCES permissions(id) ON DELETE CASCADE,
-    PRIMARY KEY (role_id, permission_id)
-);
-```
-
-### Table 7: `user_roles` (M:N)
-```sql
-CREATE TABLE user_roles (
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role_id UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id, role_id)
-);
-```
-
-### Table 8: `clients`
-```sql
+-- ====================================================================
+-- 3. CLIENTS (CRM)
+-- ====================================================================
 CREATE TABLE clients (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    company_name VARCHAR(255) NOT NULL,
-    primary_contact_name VARCHAR(255),
-    primary_email VARCHAR(255) NOT NULL,
-    phone VARCHAR(50),
-    website TEXT,
-    billing_address TEXT,
-    currency VARCHAR(10) DEFAULT 'USD',
-    is_active BOOLEAN DEFAULT TRUE,
-    is_deleted BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    company_name VARCHAR(200) NOT NULL,
+    contact_name VARCHAR(150) NOT NULL,
+    contact_email VARCHAR(255) NOT NULL,
+    contact_phone VARCHAR(50),
+    industry VARCHAR(100),
+    website VARCHAR(255),
+    status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE_CONTRACT', -- ONBOARDING, ACTIVE_CONTRACT, INACTIVE
+    total_revenue NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by UUID REFERENCES users(id),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by UUID REFERENCES users(id)
 );
-CREATE INDEX idx_clients_org ON clients(organization_id);
-```
 
-### Table 9: `projects`
-```sql
+CREATE INDEX idx_clients_org_status ON clients (organization_id, status) WHERE is_deleted = FALSE;
+CREATE INDEX idx_clients_company_name ON clients USING btree (organization_id, LOWER(company_name));
+
+-- ====================================================================
+-- 4. PROJECTS (Agile Tracker)
+-- ====================================================================
 CREATE TABLE projects (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    workspace_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
-    client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    code VARCHAR(50) NOT NULL,
+    client_id UUID NOT NULL REFERENCES clients(id) ON DELETE RESTRICT,
+    title VARCHAR(200) NOT NULL,
     description TEXT,
-    budget NUMERIC(15, 2),
-    start_date DATE,
-    target_end_date DATE,
-    progress_percentage INT DEFAULT 0,
-    status doc_status_enum DEFAULT 'DRAFT',
-    is_deleted BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX idx_projects_org_workspace ON projects(organization_id, workspace_id);
-```
-
-### Table 10: `tasks`
-```sql
-CREATE TABLE tasks (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    priority task_priority_enum DEFAULT 'MEDIUM',
-    status VARCHAR(50) DEFAULT 'TODO',
-    assignee_id UUID REFERENCES users(id),
-    due_date TIMESTAMPTZ,
-    story_points INT DEFAULT 1,
-    is_deleted BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX idx_tasks_project ON tasks(project_id);
-```
-
-### Table 11: `meetings`
-```sql
-CREATE TABLE meetings (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    raw_transcript TEXT,
-    summary_markdown TEXT,
-    action_items JSONB DEFAULT '[]'::jsonb,
-    scheduled_at TIMESTAMPTZ,
-    duration_minutes INT,
+    status VARCHAR(50) NOT NULL DEFAULT 'IN_PROGRESS', -- PLANNING, IN_PROGRESS, IN_REVIEW, COMPLETED
+    budget_allocated NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    budget_spent NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    deadline_date DATE,
+    assigned_team_ids JSONB DEFAULT '[]'::jsonb,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by UUID REFERENCES users(id),
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by UUID REFERENCES users(id)
 );
-```
 
-### Table 12: `proposals`
-```sql
+CREATE INDEX idx_projects_org_status ON projects (organization_id, status, deadline_date) WHERE is_deleted = FALSE;
+
+-- ====================================================================
+-- 5. PROPOSALS
+-- ====================================================================
 CREATE TABLE proposals (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
-    title VARCHAR(255) NOT NULL,
-    target_budget NUMERIC(15, 2),
-    timeline_weeks VARCHAR(100),
-    requirements_text TEXT,
-    content_markdown TEXT NOT NULL,
-    pdf_url TEXT,
-    status doc_status_enum DEFAULT 'DRAFT',
+    client_name VARCHAR(200) NOT NULL,
+    project_title VARCHAR(200) NOT NULL,
+    budget NUMERIC(15, 2) NOT NULL,
+    timeline_weeks INT NOT NULL,
+    industry VARCHAR(100),
+    tech_stack JSONB DEFAULT '[]'::jsonb,
+    scope_objectives TEXT NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'DRAFT', -- DRAFT, GENERATED, SENT, ACCEPTED, REJECTED
+    generated_content_markdown TEXT,
+    tokens_used INT DEFAULT 0,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by UUID REFERENCES users(id),
-    is_deleted BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by UUID REFERENCES users(id)
 );
-CREATE INDEX idx_proposals_org_client ON proposals(organization_id, client_id);
-```
 
-### Table 13: `sows` (Statements of Work)
-```sql
-CREATE TABLE sows (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    proposal_id UUID REFERENCES proposals(id) ON DELETE SET NULL,
-    client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    sow_number VARCHAR(100) UNIQUE NOT NULL,
-    scope_deliverables JSONB DEFAULT '[]'::jsonb,
-    total_value NUMERIC(15, 2) NOT NULL,
-    status doc_status_enum DEFAULT 'DRAFT',
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
+CREATE INDEX idx_proposals_org_status ON proposals (organization_id, status, created_at DESC) WHERE is_deleted = FALSE;
 
-### Table 14: `contracts`
-```sql
+-- ====================================================================
+-- 6. CONTRACTS & SOWs
+-- ====================================================================
 CREATE TABLE contracts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    sow_id UUID REFERENCES sows(id) ON DELETE SET NULL,
-    client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
-    contract_number VARCHAR(100) UNIQUE NOT NULL,
-    ip_clause_type VARCHAR(255),
-    governing_law VARCHAR(255),
-    content_markdown TEXT NOT NULL,
-    esign_status doc_status_enum DEFAULT 'DRAFT',
-    esign_url TEXT,
-    signed_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
+    proposal_id UUID REFERENCES proposals(id) ON DELETE SET NULL,
+    client_name VARCHAR(200) NOT NULL,
+    agreement_type VARCHAR(50) NOT NULL DEFAULT 'STATEMENT_OF_WORK', -- STATEMENT_OF_WORK, MSA, NDA
+    ip_ownership VARCHAR(100) NOT NULL DEFAULT 'CLIENT_EXCLUSIVE',
+    governing_law VARCHAR(150) NOT NULL DEFAULT 'Delaware, USA',
+    effective_date DATE NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'DRAFT', -- DRAFT, SENT_FOR_SIGNATURE, EXECUTED, EXPIRED
+    document_pdf_url VARCHAR(500),
+    signature_token VARCHAR(255) UNIQUE,
+    signature_url VARCHAR(500),
+    signed_at TIMESTAMP WITH TIME ZONE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by UUID REFERENCES users(id),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by UUID REFERENCES users(id)
 );
-```
 
-### Table 15: `invoices`
-```sql
+CREATE INDEX idx_contracts_org_status ON contracts (organization_id, status) WHERE is_deleted = FALSE;
+CREATE INDEX idx_contracts_sig_token ON contracts (signature_token) WHERE signature_token IS NOT NULL;
+
+-- ====================================================================
+-- 7. INVOICES
+-- ====================================================================
 CREATE TABLE invoices (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
-    sow_id UUID REFERENCES sows(id) ON DELETE SET NULL,
-    invoice_number VARCHAR(100) UNIQUE NOT NULL,
-    subtotal NUMERIC(15, 2) NOT NULL,
-    tax_amount NUMERIC(15, 2) DEFAULT 0,
-    total_amount NUMERIC(15, 2) NOT NULL,
+    client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
+    invoice_number VARCHAR(100) NOT NULL UNIQUE,
+    client_name VARCHAR(200) NOT NULL,
+    client_email VARCHAR(255) NOT NULL,
     due_date DATE NOT NULL,
-    status payment_status_enum DEFAULT 'PENDING',
-    stripe_invoice_id VARCHAR(255),
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    items JSONB NOT NULL DEFAULT '[]'::jsonb, -- Array of line items: [{description, quantity, rate, amount}]
+    subtotal NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    tax_rate_percent NUMERIC(5, 2) NOT NULL DEFAULT 8.00,
+    tax_amount NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    total_amount NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING', -- PENDING, SENT, PAID, OVERDUE, CANCELLED
+    stripe_checkout_url VARCHAR(500),
+    paid_at TIMESTAMP WITH TIME ZONE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by UUID REFERENCES users(id),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by UUID REFERENCES users(id)
 );
-CREATE INDEX idx_invoices_org ON invoices(organization_id);
-```
 
-### Table 16: `invoice_line_items`
-```sql
-CREATE TABLE invoice_line_items (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    invoice_id UUID NOT NULL REFERENCES invoices(id) ON DELETE CASCADE,
-    description TEXT NOT NULL,
-    quantity NUMERIC(10, 2) DEFAULT 1,
-    unit_rate NUMERIC(15, 2) NOT NULL,
-    total_amount NUMERIC(15, 2) NOT NULL
-);
-```
+CREATE INDEX idx_invoices_org_status ON invoices (organization_id, status, due_date) WHERE is_deleted = FALSE;
 
-### Table 17: `billing_profiles`
-```sql
-CREATE TABLE billing_profiles (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID UNIQUE NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    stripe_customer_id VARCHAR(255) UNIQUE,
-    billing_email VARCHAR(255) NOT NULL,
-    vat_number VARCHAR(100),
-    payment_method_last4 VARCHAR(4),
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-### Table 18: `subscriptions`
-```sql
-CREATE TABLE subscriptions (
+-- ====================================================================
+-- 8. JIRA SPRINTS & STORIES
+-- ====================================================================
+CREATE TABLE jira_stories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    stripe_subscription_id VARCHAR(255) UNIQUE,
-    plan_tier plan_tier_enum NOT NULL,
-    current_period_start TIMESTAMPTZ NOT NULL,
-    current_period_end TIMESTAMPTZ NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    cancel_at_period_end BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    project_id UUID REFERENCES projects(id) ON DELETE SET NULL,
+    jira_issue_key VARCHAR(50) NOT NULL,
+    summary VARCHAR(255) NOT NULL,
+    description TEXT,
+    story_points INT DEFAULT 3,
+    status VARCHAR(50) NOT NULL DEFAULT 'TO_DO', -- TO_DO, IN_PROGRESS, DONE
+    epic_name VARCHAR(150),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-```
 
-### Table 19: `payments`
-```sql
-CREATE TABLE payments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    invoice_id UUID REFERENCES invoices(id) ON DELETE SET NULL,
-    amount NUMERIC(15, 2) NOT NULL,
-    currency VARCHAR(10) DEFAULT 'USD',
-    payment_status payment_status_enum DEFAULT 'PROCESSING',
-    stripe_payment_intent_id VARCHAR(255) UNIQUE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
+CREATE INDEX idx_jira_org_key ON jira_stories (organization_id, jira_issue_key);
 
-### Table 20: `notifications`
-```sql
-CREATE TABLE notifications (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    type VARCHAR(50) NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX idx_notifs_user ON notifications(user_id, is_read);
-```
-
-### Table 21: `activities` (Activity Feed)
-```sql
-CREATE TABLE activities (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
-    action VARCHAR(100) NOT NULL,
-    entity_type VARCHAR(100) NOT NULL,
-    entity_id UUID NOT NULL,
-    metadata JSONB DEFAULT '{}'::jsonb,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-### Table 22: `ai_usage_logs`
-```sql
-CREATE TABLE ai_usage_logs (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
-    provider ai_provider_enum NOT NULL,
-    model_name VARCHAR(100) NOT NULL,
-    prompt_tokens INT NOT NULL,
-    completion_tokens INT NOT NULL,
-    total_tokens INT NOT NULL,
-    estimated_cost_usd NUMERIC(10, 6),
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX idx_ai_usage_org ON ai_usage_logs(organization_id, created_at);
-```
-
-### Table 23: `audit_logs` (SOC2 Compliance)
-```sql
+-- ====================================================================
+-- 9. AUDIT LOGS
+-- ====================================================================
 CREATE TABLE audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     user_id UUID REFERENCES users(id) ON DELETE SET NULL,
-    ip_address VARCHAR(50),
-    user_agent TEXT,
     action VARCHAR(100) NOT NULL,
-    resource VARCHAR(100) NOT NULL,
-    changes JSONB DEFAULT '{}'::jsonb,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    resource_type VARCHAR(100) NOT NULL,
+    resource_id UUID,
+    ip_address VARCHAR(45),
+    user_agent VARCHAR(255),
+    details JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-```
 
-### Table 24: `integrations`
-```sql
-CREATE TABLE integrations (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    provider VARCHAR(100) NOT NULL,
-    access_token_encrypted TEXT NOT NULL,
-    refresh_token_encrypted TEXT,
-    expires_at TIMESTAMPTZ,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(organization_id, provider)
-);
-```
-
-### Table 25: `api_keys` (BYOK Keys)
-```sql
-CREATE TABLE api_keys (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    provider ai_provider_enum NOT NULL,
-    key_hash TEXT NOT NULL,
-    key_encrypted TEXT NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(organization_id, provider)
-);
-```
-
-### Table 26: `prompt_templates`
-```sql
-CREATE TABLE prompt_templates (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    category VARCHAR(100) NOT NULL,
-    template_text TEXT NOT NULL,
-    variables JSONB DEFAULT '[]'::jsonb,
-    is_system BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-### Table 27: `files` (S3/R2 Metadata)
-```sql
-CREATE TABLE files (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    filename VARCHAR(255) NOT NULL,
-    storage_key TEXT NOT NULL,
-    mime_type VARCHAR(100),
-    size_bytes BIGINT NOT NULL,
-    uploaded_by UUID REFERENCES users(id),
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
----
-
-## 4. Multi-Tenant Row-Level Security (RLS) Policy Example
-
-```sql
--- Enable RLS on proposals
-ALTER TABLE proposals ENABLE ROW LEVEL SECURITY;
-
--- Create policy for tenant isolation
-CREATE POLICY tenant_isolation_policy ON proposals
-    FOR ALL
-    USING (organization_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid);
+CREATE INDEX idx_audit_logs_org_date ON audit_logs (organization_id, created_at DESC);
 ```
