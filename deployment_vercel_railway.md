@@ -1,84 +1,53 @@
-# Option A Deployment Specification: Vercel + Railway + AWS S3
+# Option A Production Deployment Guide: Vercel + Railway + AWS S3
 ## AI Agency Operating System (AgencyOS)
 
 ---
 
-## 1. Deployment Topology & Architecture Overview
+## 1. Deployment Architecture Overview
 
-Option A provides a streamlined, cost-efficient, high-performance deployment topology suitable for rapid scaling:
-- **Frontend App**: Deployed on **Vercel** with Global Edge CDN caching.
+Option A offers an agile, cost-optimized production topology:
+- **Frontend App**: Deployed on **Vercel** with Global Edge Network CDN.
 - **Backend Service**: Deployed on **Railway** (Spring Boot 3.2 Java 21 container).
-- **Relational Database**: **Railway PostgreSQL 16** (Managed Instance with Automated Backups).
-- **Cache & Queue**: **Railway Redis 7** (Managed Redis Cluster).
-- **Document & Asset Storage**: **Amazon Web Services (AWS) S3** (S3 Bucket with AES-256 server-side encryption).
+- **Background Worker**: Deployed on **Railway Worker Service** (Async Redis Queue Processor).
+- **Database**: **Railway PostgreSQL 16** (Managed Instance).
+- **Cache & Queue**: **Railway Redis 7** (Managed Cluster).
+- **Storage**: **AWS S3** (Encrypted contract PDF and asset store).
 
----
-
-## 2. Infrastructure Setup & Step-by-Step Configuration
-
-### Step 1: Provision Railway PostgreSQL & Redis Services
-
-1. Log into Railway Console and create project `agencyos-production`.
-2. Provision **PostgreSQL 16**:
-   - RAM: 4GB, CPU: 2 vCPU
-   - Set Connection String variable `DATABASE_URL`.
-3. Provision **Redis 7**:
-   - RAM: 1GB, CPU: 1 vCPU
-   - Set Connection String variable `REDIS_URL`.
-
-### Step 2: Deploy Spring Boot Backend on Railway
-
-1. Connect GitHub Repository `Vinod-Nex/AI-Agency-Operating-System`.
-2. Set Build & Start Commands:
-   - Build Command: `mvn clean package -DskipTests`
-   - Start Command: `java -jar target/ai-agency-operating-system-0.1.0.jar`
-3. Configure Environment Variables in Railway Console:
-   ```env
-   SPRING_PROFILES_ACTIVE=prod
-   PORT=8080
-   SPRING_DATASOURCE_URL=jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
-   SPRING_DATASOURCE_USERNAME=${PGUSER}
-   SPRING_DATASOURCE_PASSWORD=${PGPASSWORD}
-   SPRING_REDIS_HOST=${REDISHOST}
-   SPRING_REDIS_PORT=${REDISPORT}
-   SPRING_REDIS_PASSWORD=${REDISPASSWORD}
-   JWT_SECRET=super_secret_jwt_key_minimum_256_bits_length_here_12345
-   AWS_S3_BUCKET=agencyos-production-contracts-s3
-   AWS_ACCESS_KEY_ID=AKIAXXXXXXXXXXXXXXXX
-   AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-   AWS_REGION=us-east-1
-   ```
-
-### Step 3: Deploy Next.js 15 Frontend on Vercel
-
-1. Log into Vercel Dashboard and import `Vinod-Nex/AI-Agency-Operating-System`.
-2. Framework Preset: `Next.js`
-3. Set Build & Output Settings:
-   - Build Command: `npm run build`
-   - Output Directory: `.next`
-4. Set Environment Variables in Vercel Console:
-   ```env
-   NEXT_PUBLIC_API_BASE_URL=https://backend-production-agencyos.up.railway.app/api/v1
-   NEXT_PUBLIC_APP_URL=https://agencyos.io
-   ```
-5. Attach Custom Domain: `agencyos.io` with SSL auto-provisioning.
-
----
-
-## 3. Flyway Migration & Database Readiness
-
-Flyway executes automatically during backend container startup via Spring Boot configuration:
-```yaml
-spring:
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-    locations: classpath:db/migration
+```mermaid
+graph TD
+    Client[Next.js 15 Client - Vercel Edge CDN] -->|HTTPS REST / WSS| RailwayGW[Railway API Gateway / Spring Boot]
+    RailwayGW -->|JDBC| RailwayPG[Railway PostgreSQL 16 DB]
+    RailwayGW -->|RESP| RailwayRedis[Railway Redis 7 Cache & Queue]
+    RailwayWorker[Railway Async Worker] -->|RESP Queue| RailwayRedis
+    RailwayGW -->|AWS SDK| S3Bucket[AWS S3 Bucket]
 ```
 
 ---
 
-## 4. Scaling & Health Verification
+## 2. Step-by-Step Deployment Guide
 
-- **Railway Auto-Scaling**: Set memory alert threshold at $80\%$ usage to add instances.
-- **Health Check Endpoint**: Vercel and Railway ping `GET /actuator/health` every 30 seconds.
+### A. Railway Database & Redis Setup
+1. Create project `agencyos-prod` in Railway.
+2. Provision **PostgreSQL 16**:
+   - Connection URL: `jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=require`
+3. Provision **Redis 7**:
+   - Connection URL: `redis://:${REDISPASSWORD}@${REDISHOST}:${REDISPORT}`
+
+### B. Railway Spring Boot App Deployment
+1. Connect GitHub Repository `Vinod-Nex/AI-Agency-Operating-System`.
+2. Build Command: `mvn clean package -DskipTests`
+3. Start Command: `java -jar target/ai-agency-operating-system-0.1.0.jar`
+4. Custom Domain: `api.agencyos.io` (Auto SSL via Railway).
+
+### C. Vercel Frontend Deployment
+1. Import GitHub Repository into Vercel.
+2. Build Command: `npm run build`
+3. Framework Preset: Next.js
+4. Custom Domain: `agencyos.io`
+
+---
+
+## 3. Health Checks & Verification
+
+- **Vercel Health**: `GET https://agencyos.io/` -> HTTP 200
+- **Railway Backend Health**: `GET https://api.agencyos.io/actuator/health` -> `{"status": "UP"}`
