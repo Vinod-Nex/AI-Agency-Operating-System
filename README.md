@@ -8,12 +8,27 @@ An enterprise-grade, full-stack **AI Operating System** designed for modern digi
 
 This project contains comprehensive enterprise-level architectural, product, design, database, API, DevOps, and QA testing specifications:
 
+### ⚙️ CI/CD Architecture & GitHub Actions Pipeline
+- **[ci_cd_setup.md](ci_cd_setup.md)** — Master CI/CD Architecture & Implementation Guide bridging GitHub Actions, Next.js 15, Spring Boot 3.2, Vercel, Railway, and AWS.
+- **[github_actions_architecture.md](github_actions_architecture.md)** — GitHub Actions workflow topology, reusable workflows, matrix builds, permissions, and runner infrastructure.
+- **[frontend_ci_pipeline.md](frontend_ci_pipeline.md)** — Next.js 15 linting, TypeScript type-check, Jest component tests, Playwright E2E, and bundle analysis pipeline.
+- **[backend_ci_pipeline.md](backend_ci_pipeline.md)** — Spring Boot 3.2 Java 21 compile, JUnit 5, REST Assured, Spring validation, Flyway dry-runs, and JaCoCo coverage pipeline.
+- **[database_ci_pipeline.md](database_ci_pipeline.md)** — Flyway migration validation, schema drift detection, seed data validation, and rollback tests.
+- **[deployment_pipeline.md](deployment_pipeline.md)** — Vercel preview/production deployments, Railway, and AWS ECS Fargate Blue-Green & Canary deployment workflows.
+- **[release_strategy.md](release_strategy.md)** — GitHub Flow, semantic versioning (`v1.0.0`), Git tags, approval gates, and automated release notes.
+- **[rollback_strategy.md](rollback_strategy.md)** — Automated and emergency rollback procedures for Vercel, ECS Fargate, Railway, and database schema migrations.
+- **[security_pipeline.md](security_pipeline.md)** — Snyk dependency scans, CodeQL SAST, Trivy container scans, OWASP Dependency Check, and SBOM generation.
+- **[quality_gates.md](quality_gates.md)** — Frontend/Backend coverage thresholds, performance budgets, accessibility WCAG AA gates, and lint thresholds.
+- **[environment_strategy.md](environment_strategy.md)** — Multi-environment strategy (Dev, QA, Testing, Staging, Production) URLs, database, Redis, and secret mappings.
+- **[github_secrets.md](github_secrets.md)** — GitHub Secrets inventory, access policies, secret rotation, and least-privilege permission matrix.
+- **[monitoring_pipeline.md](monitoring_pipeline.md)** — Pipeline build duration SLA metrics, failure notifications via Slack & Microsoft Teams, and deployment tracking.
+- **[pipeline_checklists.md](pipeline_checklists.md)** — Pre-build, security scan, pre-deployment, post-deployment smoke test, and release checklists.
+
 ### ☁️ Production Deployment & DevOps Architecture
 - **[deployment_vercel_railway.md](deployment_vercel_railway.md)** — Option A Production Deployment: Vercel + Railway (Backend/PostgreSQL/Redis) + AWS S3.
 - **[deployment_vercel_aws.md](deployment_vercel_aws.md)** — Option B Enterprise AWS Deployment: Vercel + AWS ECS Fargate + RDS PostgreSQL + ElastiCache + CloudFront + Route 53.
 - **[environment_variables.md](environment_variables.md)** — Complete inventory of all environment variables for Dev, QA, Staging, and Production across all layers.
 - **[infrastructure_architecture.md](infrastructure_architecture.md)** — C4 Deployment diagrams, multi-environment strategy (Dev/QA/Staging/Prod URLs, DB, Redis, Secrets).
-- **[github_actions_ci_cd.md](github_actions_ci_cd.md)** — Production GitHub Actions YAML workflows (`deploy-production.yml`) covering linting, unit/integration tests, Playwright E2E, vulnerability scanning, Docker ECR builds, and deployments.
 - **[database_deployment.md](database_deployment.md)** — PostgreSQL RDS deployment, HikariCP connection pooling, Flyway migrations, seed data, backups, read replicas, HA.
 - **[redis_deployment.md](redis_deployment.md)** — Redis deployment architecture, L2 response caching, session storage, rate-limit buckets, queue backends, TTL.
 - **[storage_deployment.md](storage_deployment.md)** — AWS S3 / Cloudflare R2 bucket structure, IAM policies, pre-signed URLs, multipart upload strategy, backups.
@@ -22,7 +37,6 @@ This project contains comprehensive enterprise-level architectural, product, des
 - **[security_deployment.md](security_deployment.md)** — HTTPS everywhere, TLS 1.3, WAF, CORS, CSP, CSRF, JWT security, IAM roles, rate limiting, OWASP controls.
 - **[backup_restore_strategy.md](backup_restore_strategy.md)** — Automated snapshot backups, WAL archiving, point-in-time recovery (PITR), RTO $< 15\text{m}$, RPO $< 15\text{m}$.
 - **[scaling_strategy.md](scaling_strategy.md)** — Auto-scaling rules (ECS Fargate / Railway), PostgreSQL read replicas, Redis cluster scaling, AI provider failover.
-- **[rollback_strategy.md](rollback_strategy.md)** — Zero-downtime rollback procedures for Vercel, ECS Fargate, Railway, and Flyway database migrations.
 - **[production_go_live_checklist.md](production_go_live_checklist.md)** — Pre-go-live and post-go-live verification checklist across infrastructure, security, database, monitoring, and DR.
 
 ### 🔌 API Architecture & Integration Suite

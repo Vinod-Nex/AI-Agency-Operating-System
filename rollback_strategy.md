@@ -1,19 +1,29 @@
-# Zero-Downtime Rollback Execution Specification
+# Automated & Emergency Rollback Workflow Specification (`rollback.yml`)
 ## AI Agency Operating System (AgencyOS)
 
 ---
 
-## 1. Zero-Downtime Rollback Workflow
+## 1. Automated Incident Trigger & Rollback Workflow
 
-```
-[ Incident Detected ] ──> 1. Trigger Vercel Rollback (Instant Edge Revert)
-                             │
-                             ├──> 2. Trigger AWS ECS Task Revision Revert (Fargate)
-                             │
-                             └──> 3. Execute Flyway Database Undo Migration (if required)
-```
+```yaml
+name: Rollback Pipeline
 
-### Instant Execution Commands
-- **Frontend Vercel Rollback**: `vercel rollback --prod` ($< 10\text{s}$)
-- **Backend ECS Rollback**: `aws ecs update-service --cluster agencyos-prod-cluster --service agencyos-backend-service --task-definition agencyos-backend-task:PREVIOUS_REVISION` ($< 90\text{s}$)
-- **Flyway Database Undo**: `mvn flyway:undo`
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: 'Environment to rollback'
+        required: true
+        default: 'production'
+
+jobs:
+  rollback-execution:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rollback Vercel Frontend
+        run: vercel rollback --prod --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Rollback AWS ECS Fargate Backend
+        run: |
+          aws ecs update-service --cluster agencyos-prod-cluster --service agencyos-backend-service --task-definition agencyos-backend-task:PREVIOUS_REVISION --force-new-deployment
+```
