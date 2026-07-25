@@ -8,6 +8,22 @@ An enterprise-grade, full-stack **AI Operating System** designed for modern digi
 
 This project contains comprehensive enterprise-level architectural, product, design, database, API, DevOps, and QA testing specifications:
 
+### 📊 Observability, SRE & Operations Architecture
+- **[monitoring_and_logging.md](monitoring_and_logging.md)** — Master Observability, Logging, Monitoring, Alerting & Incident Response Specification.
+- **[observability_architecture.md](observability_architecture.md)** — OpenTelemetry Collector architecture, 3 Pillars of Observability, and telemetry flows.
+- **[logging_strategy.md](logging_strategy.md)** — Structured JSON log format, correlation IDs, trace/span IDs, audit & AI log categories.
+- **[monitoring_strategy.md](monitoring_strategy.md)** — APM monitoring strategy across Next.js 15, Spring Boot API, PostgreSQL, Redis, and AI providers.
+- **[grafana_dashboards.md](grafana_dashboards.md)** — Specifications for 8 Grafana Dashboards (Executive, Ops, API, Database, AI, Billing, Security, Infrastructure).
+- **[prometheus_metrics.md](prometheus_metrics.md)** — Complete Prometheus metric catalog (`http_server_requests_seconds`, HikariCP, Redis, AI token counters).
+- **[alerting_strategy.md](alerting_strategy.md)** — Alerting rules catalog, severity levels (SEV1-SEV4), and notification channels (Slack, PagerDuty, Email).
+- **[incident_response_runbook.md](incident_response_runbook.md)** — Incident management framework, escalation matrix, incident timeline, postmortem template, and RCA.
+- **[distributed_tracing.md](distributed_tracing.md)** — OpenTelemetry tracing strategy, span hierarchy, and W3C context propagation across services.
+- **[security_monitoring.md](security_monitoring.md)** — Security event monitoring, failed login detection, RBAC violations, API abuse, and audit trails.
+- **[performance_monitoring.md](performance_monitoring.md)** — Core Web Vitals ($LCP < 2.2\text{s}$, $CLS < 0.05$, $INP < 90\text{ms}$), backend throughput, and AI latency tracking.
+- **[health_checks.md](health_checks.md)** — Health check probes (`/actuator/health/liveness`, readiness), DB, Redis, S3, and AI provider health.
+- **[log_retention_policy.md](log_retention_policy.md)** — Log retention periods across environments, PII redaction, archiving, and compliance rules.
+- **[operational_runbooks.md](operational_runbooks.md)** — Step-by-step operational runbooks for API down, DB outage, Redis crash, AI provider failover, and DR.
+
 ### ⚙️ CI/CD Architecture & GitHub Actions Pipeline
 - **[ci_cd_setup.md](ci_cd_setup.md)** — Master CI/CD Architecture & Implementation Guide bridging GitHub Actions, Next.js 15, Spring Boot 3.2, Vercel, Railway, and AWS.
 - **[github_actions_architecture.md](github_actions_architecture.md)** — GitHub Actions workflow topology, reusable workflows, matrix builds, permissions, and runner infrastructure.
@@ -32,8 +48,6 @@ This project contains comprehensive enterprise-level architectural, product, des
 - **[database_deployment.md](database_deployment.md)** — PostgreSQL RDS deployment, HikariCP connection pooling, Flyway migrations, seed data, backups, read replicas, HA.
 - **[redis_deployment.md](redis_deployment.md)** — Redis deployment architecture, L2 response caching, session storage, rate-limit buckets, queue backends, TTL.
 - **[storage_deployment.md](storage_deployment.md)** — AWS S3 / Cloudflare R2 bucket structure, IAM policies, pre-signed URLs, multipart upload strategy, backups.
-- **[monitoring_strategy.md](monitoring_strategy.md)** — Prometheus, Grafana, OpenTelemetry, Sentry, CloudWatch metrics, SLA targets, and PagerDuty alerting.
-- **[logging_strategy.md](logging_strategy.md)** — Structured JSON logging (Loki/ELK), correlation IDs, audit logs, authentication logs, retention policies.
 - **[security_deployment.md](security_deployment.md)** — HTTPS everywhere, TLS 1.3, WAF, CORS, CSP, CSRF, JWT security, IAM roles, rate limiting, OWASP controls.
 - **[backup_restore_strategy.md](backup_restore_strategy.md)** — Automated snapshot backups, WAL archiving, point-in-time recovery (PITR), RTO $< 15\text{m}$, RPO $< 15\text{m}$.
 - **[scaling_strategy.md](scaling_strategy.md)** — Auto-scaling rules (ECS Fargate / Railway), PostgreSQL read replicas, Redis cluster scaling, AI provider failover.
