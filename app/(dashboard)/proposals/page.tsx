@@ -1,84 +1,126 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Sparkles, FileText, Download, Copy, Check, Send, RefreshCw } from "lucide-react";
+import {
+  Sparkles,
+  FileText,
+  Download,
+  Copy,
+  Check,
+  Send,
+  RefreshCw,
+  Sliders,
+  ShieldCheck,
+  Zap,
+  CheckCircle2,
+  AlertCircle,
+  Brain,
+  FileCode
+} from "lucide-react";
+import { exportToWordDoc, exportToPdf } from "@/lib/exportUtils";
+import { generateRichQuotationAI, DEFAULT_AGENCY_COMPANY } from "@/lib/aiService";
 
 export default function ProposalGeneratorPage() {
+  // Input Configuration State
   const [clientName, setClientName] = useState("Acme Global Systems");
-  const [projectBudget, setProjectBudget] = useState("$45,000");
-  const [timeline, setTimeline] = useState("8 Weeks");
-  const [industry, setIndustry] = useState("Enterprise SaaS");
-  const [techStack, setTechStack] = useState("Next.js 15, TypeScript, Tailwind CSS, PostgreSQL");
-  const [requirements, setRequirements] = useState(
-    "Client requires an enterprise web application portal for multi-tenant analytics, AI automated reporting, SOC2 security compliance, and billing integration."
-  );
+  const [clientEmail, setClientEmail] = useState("proposals@acmeglobal.com");
+  const [projectBudget, setProjectBudget] = useState("$75,000");
+  const [timeline, setTimeline] = useState("10 Weeks");
+  const [industry, setIndustry] = useState("Enterprise SaaS & FinTech");
+  const [techStack, setTechStack] = useState("Next.js 15, Spring Boot, PostgreSQL, Redis, OpenAI GPT-4o, AWS ECS");
+  const [proposalTone, setProposalTone] = useState<"enterprise" | "technical" | "persuasive">("enterprise");
+  const [aiModel, setAiModel] = useState<"gpt-4o" | "claude-3-5" | "gemini-2-flash">("gpt-4o");
 
+  // Requirements & Add-ons
+  const [requirements, setRequirements] = useState(
+    "Client requires an enterprise web application portal for multi-tenant analytics, AI automated reporting, SOC 2 Type II security compliance, Stripe billing integration, and real-time dashboard analytics."
+  );
+  const [includeSoc2Addon, setIncludeSoc2Addon] = useState(true);
+  const [includeSlaRetainer, setIncludeSlaRetainer] = useState(true);
+
+  // Status & Generation State
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  const generateOutputText = (cName: string, budget: string, time: string, ind: string, tech: string, req: string) => {
-    return `# ENTERPRISE PROJECT PROPOSAL: ${(cName || "CLIENT").toUpperCase()}
-
-**Client**: ${cName || "Client Name"}
-**Industry**: ${ind}
-**Estimated Budget**: ${budget}
-**Timeline**: ${time}
-**Tech Stack**: ${tech}
-
----
-
-## 1. Executive Summary
-Apex Digital Studio proposes an end-to-end digital transformation solution for **${cName || "Client"}**. Utilizing modern web architecture, we will construct a high-availability platform tailored to ${ind} specifications.
-
-## 2. Scope of Work & Key Requirements
-${req}
-
-## 3. Financial Investment & Payment Schedule
-- **Phase 1: Project Kickoff & Discovery**: 30%
-- **Phase 2: Full-Stack Web Development (${tech})**: 40%
-- **Phase 3: Final Acceptance & Production Launch**: 30%
-- **Total Investment**: ${budget} (${time} SLA warranty included)
-
-## 4. Acceptance & Sign-off
-This proposal is valid for 30 days. Contact Apex Digital Studio to approve and initiate agreement.`;
-  };
-
+  const [sentStatus, setSentStatus] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
-  const [proposalOutput, setProposalOutput] = useState(
-    generateOutputText("Acme Global Systems", "$45,000", "8 Weeks", "Enterprise SaaS", "Next.js 15, TypeScript, Tailwind CSS, PostgreSQL", "Client requires an enterprise web application portal for multi-tenant analytics, AI automated reporting, SOC2 security compliance, and billing integration.")
-  );
+  const [proposalOutput, setProposalOutput] = useState("");
 
-
+  // Trigger AI generation whenever inputs change
   useEffect(() => {
     if (!clientName.trim()) {
-      setValidationError("Validation Error: Client Name is required.");
+      setValidationError("Validation Error: Client Organization Name is required.");
       setProposalOutput("");
     } else {
       setValidationError(null);
-      setProposalOutput(generateOutputText(clientName, projectBudget, timeline, industry, techStack, requirements));
+      generateRichQuotationAI({
+        clientName,
+        clientEmail,
+        projectBudget,
+        timeline,
+        industry,
+        techStack,
+        requirements,
+        company: DEFAULT_AGENCY_COMPANY
+      }).then((doc) => setProposalOutput(doc));
     }
-  }, [clientName, projectBudget, timeline, industry, techStack, requirements]);
+  }, [
+    clientName,
+    clientEmail,
+    projectBudget,
+    timeline,
+    industry,
+    techStack,
+    requirements,
+    proposalTone,
+    aiModel,
+    includeSoc2Addon,
+    includeSlaRetainer
+  ]);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!clientName.trim()) {
-      setValidationError("Validation Error: Client Name is required.");
+      setValidationError("Validation Error: Client Organization Name is required.");
       setProposalOutput("");
       return;
     }
     setValidationError(null);
     setIsGenerating(true);
-    setProposalOutput(generateOutputText(clientName, projectBudget, timeline, industry, techStack, requirements));
-    setTimeout(() => {
-      setIsGenerating(false);
-    }, 100);
-  };
 
+    const doc = await generateRichQuotationAI({
+      clientName,
+      clientEmail,
+      projectBudget,
+      timeline,
+      industry,
+      techStack,
+      requirements,
+      company: DEFAULT_AGENCY_COMPANY
+    });
+
+    setProposalOutput(doc);
+    setIsGenerating(false);
+  };
 
   const handleCopy = () => {
     if (!proposalOutput) return;
     navigator.clipboard.writeText(proposalOutput);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownloadWord = () => {
+    if (!proposalOutput) return;
+    exportToWordDoc(`Quotation_${clientName.replace(/\s+/g, "_")}`, `Quotation Proposal - ${clientName}`, proposalOutput);
+  };
+
+  const handleDownloadPdf = () => {
+    if (!proposalOutput) return;
+    exportToPdf(`Quotation_${clientName.replace(/\s+/g, "_")}`, `Quotation Proposal - ${clientName}`, proposalOutput);
+  };
+
+  const handleSendToClient = () => {
+    setSentStatus(true);
+    setTimeout(() => setSentStatus(false), 3000);
   };
 
   return (
@@ -88,34 +130,45 @@ This proposal is valid for 30 days. Contact Apex Digital Studio to approve and i
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <FileText className="w-6 h-6 text-blue-400" />
-            <span>AI Proposal Generator</span>
+            <span>AI Quotation & SOW Proposal Generator</span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Synthesize client requirements into high-converting client proposals in seconds
+            Generate detailed company quotations and SOW proposals hit with AI models, formatted for PDF & Word exports
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
+            disabled={!proposalOutput}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all disabled:opacity-50"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? "Copied!" : "Copy Text"}</span>
           </button>
           <button
-            onClick={() => alert("Downloading PDF Proposal bundle...")}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
+            onClick={handleDownloadWord}
+            disabled={!proposalOutput}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all disabled:opacity-50"
           >
-            <Download className="w-3.5 h-3.5" />
+            <FileCode className="w-3.5 h-3.5 text-blue-400" />
+            <span>Export Word (.doc)</span>
+          </button>
+          <button
+            onClick={handleDownloadPdf}
+            disabled={!proposalOutput}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all disabled:opacity-50"
+          >
+            <Download className="w-3.5 h-3.5 text-emerald-400" />
             <span>Export PDF</span>
           </button>
           <button
-            onClick={() => alert("Proposal sent to client portal!")}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-500/20 transition-all"
+            onClick={handleSendToClient}
+            disabled={!proposalOutput}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50"
           >
-            <Send className="w-3.5 h-3.5" />
-            <span>Send to Client</span>
+            {sentStatus ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Send className="w-3.5 h-3.5" />}
+            <span>{sentStatus ? "Sent to Client!" : "Send to Client"}</span>
           </button>
         </div>
       </div>
@@ -125,20 +178,67 @@ This proposal is valid for 30 days. Contact Apex Digital Studio to approve and i
         {/* Input Controls Form */}
         <div className="lg:col-span-5 space-y-4">
           <div className="glass-panel p-5 rounded-2xl space-y-4">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-              <Sparkles className="w-4 h-4 text-blue-400" />
-              <span>Proposal Prompt Configuration</span>
+            <h2 className="text-sm font-bold text-white flex items-center justify-between border-b border-slate-800 pb-3">
+              <span className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-blue-400" />
+                <span>Quotation Configuration</span>
+              </span>
+              <span className="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 font-mono">
+                Engine: {aiModel.toUpperCase()}
+              </span>
             </h2>
 
-            <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Client Name / Organization</label>
-              <input
-                type="text"
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-                placeholder="Client Name"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
-              />
+            {/* AI Model & Tone Selectors */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">AI API Engine</label>
+                <select
+                  value={aiModel}
+                  onChange={(e) => setAiModel(e.target.value as any)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+                >
+                  <option value="gpt-4o">OpenAI GPT-4o API</option>
+                  <option value="claude-3-5">Anthropic Claude 3.5</option>
+                  <option value="gemini-2-flash">Google Gemini API</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Document Style</label>
+                <select
+                  value={proposalTone}
+                  onChange={(e) => setProposalTone(e.target.value as any)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+                >
+                  <option value="enterprise">Commercial Enterprise</option>
+                  <option value="technical">Technical Specification</option>
+                  <option value="persuasive">Persuasive Proposal</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Client Organization Name</label>
+                <input
+                  type="text"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  placeholder="Acme Global Systems"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Client Email Address</label>
+                <input
+                  type="email"
+                  value={clientEmail}
+                  onChange={(e) => setClientEmail(e.target.value)}
+                  placeholder="billing@acme.com"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -148,7 +248,7 @@ This proposal is valid for 30 days. Contact Apex Digital Studio to approve and i
                   type="text"
                   value={projectBudget}
                   onChange={(e) => setProjectBudget(e.target.value)}
-                  placeholder="Budget"
+                  placeholder="$75,000"
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
                 />
               </div>
@@ -158,7 +258,7 @@ This proposal is valid for 30 days. Contact Apex Digital Studio to approve and i
                   type="text"
                   value={timeline}
                   onChange={(e) => setTimeline(e.target.value)}
-                  placeholder="Timeline"
+                  placeholder="10 Weeks"
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
                 />
               </div>
@@ -170,6 +270,7 @@ This proposal is valid for 30 days. Contact Apex Digital Studio to approve and i
                 type="text"
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
+                placeholder="Enterprise SaaS & FinTech"
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
@@ -180,6 +281,7 @@ This proposal is valid for 30 days. Contact Apex Digital Studio to approve and i
                 type="text"
                 value={techStack}
                 onChange={(e) => setTechStack(e.target.value)}
+                placeholder="Next.js 15, Spring Boot, PostgreSQL, AWS"
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
@@ -190,9 +292,38 @@ This proposal is valid for 30 days. Contact Apex Digital Studio to approve and i
                 rows={4}
                 value={requirements}
                 onChange={(e) => setRequirements(e.target.value)}
-                placeholder="Project Scope"
+                placeholder="Describe specific features, API integrations, and security guarantees..."
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors resize-none"
               />
+            </div>
+
+            {/* Enterprise Add-ons Toggles */}
+            <div className="pt-2 border-t border-slate-800/80 space-y-2">
+              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeSoc2Addon}
+                  onChange={(e) => setIncludeSoc2Addon(e.target.checked)}
+                  className="rounded border-slate-700 bg-slate-950 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Include SOC 2 Type II Security Package</span>
+                </span>
+              </label>
+
+              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeSlaRetainer}
+                  onChange={(e) => setIncludeSlaRetainer(e.target.checked)}
+                  className="rounded border-slate-700 bg-slate-950 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Include 90-Day Post-Launch SLA Warranty</span>
+                </span>
+              </label>
             </div>
 
             <button
@@ -203,12 +334,12 @@ This proposal is valid for 30 days. Contact Apex Digital Studio to approve and i
               {isGenerating ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Generating Proposal...</span>
+                  <span>Querying AI Engine & Synthesizing...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  <span>Generate Proposal</span>
+                  <span>Generate Detailed AI Quotation</span>
                 </>
               )}
             </button>
@@ -217,34 +348,43 @@ This proposal is valid for 30 days. Contact Apex Digital Studio to approve and i
 
         {/* Live Proposal Document Output */}
         <div className="lg:col-span-7">
-          <div className="glass-panel p-6 rounded-2xl h-full flex flex-col justify-between min-h-[520px]">
+          <div className="glass-panel p-6 rounded-2xl h-full flex flex-col justify-between min-h-[550px]">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Live Document Preview
-              </span>
-              <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-semibold">
-                Client Ready • Synchronized
-              </span>
+              <div className="flex items-center gap-2">
+                <Brain className="w-4 h-4 text-purple-400" />
+                <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  Live Quotation & SOW Blueprint (Company Detailed)
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  <span>Word & PDF Export Ready</span>
+                </span>
+              </div>
             </div>
 
-            <div className="flex-1 bg-slate-950/70 border border-slate-800 rounded-xl p-5 overflow-y-auto max-h-[550px] font-sans">
+            <div className="flex-1 bg-slate-950/80 border border-slate-800/80 rounded-xl p-6 overflow-y-auto max-h-[580px] font-sans">
               {validationError ? (
-                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold">
-                  {validationError}
+                <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{validationError}</span>
                 </div>
               ) : (
-                <pre className="text-xs text-slate-200 whitespace-pre-wrap font-sans leading-relaxed">
+                <pre className="text-xs text-slate-200 whitespace-pre-wrap font-sans leading-relaxed selection:bg-blue-600 selection:text-white">
                   {proposalOutput}
                 </pre>
               )}
             </div>
 
+            {/* Bottom Info Bar */}
+            <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Includes Company Details, Tax ID & Wire Info</span>
+              <span>Supported Exports: PDF & Microsoft Word (.doc)</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-
-

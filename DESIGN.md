@@ -1,157 +1,195 @@
 ---
-name: AI Agency Operating System Design System
-theme: Dark Minimalist Enterprise AI
+name: Synthetic Intelligence OS
+colors:
+  surface: '#131313'
+  surface-dim: '#131313'
+  surface-bright: '#3a3939'
+  surface-container-lowest: '#0e0e0e'
+  surface-container-low: '#1c1b1b'
+  surface-container: '#201f1f'
+  surface-container-high: '#2a2a2a'
+  surface-container-highest: '#353534'
+  on-surface: '#e5e2e1'
+  on-surface-variant: '#c1c6d7'
+  inverse-surface: '#e5e2e1'
+  inverse-on-surface: '#313030'
+  outline: '#8b90a0'
+  outline-variant: '#414755'
+  surface-tint: '#adc6ff'
+  primary: '#adc6ff'
+  on-primary: '#002e69'
+  primary-container: '#4b8eff'
+  on-primary-container: '#00285c'
+  inverse-primary: '#005bc1'
+  secondary: '#d7baff'
+  on-secondary: '#440087'
+  secondary-container: '#5f19af'
+  on-secondary-container: '#caa4ff'
+  tertiary: '#5cde94'
+  on-tertiary: '#00391e'
+  tertiary-container: '#06a662'
+  on-tertiary-container: '#003119'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#d8e2ff'
+  primary-fixed-dim: '#adc6ff'
+  on-primary-fixed: '#001a41'
+  on-primary-fixed-variant: '#004493'
+  secondary-fixed: '#eddcff'
+  secondary-fixed-dim: '#d7baff'
+  on-secondary-fixed: '#290055'
+  on-secondary-fixed-variant: '#5f19af'
+  tertiary-fixed: '#7afbae'
+  tertiary-fixed-dim: '#5cde94'
+  on-tertiary-fixed: '#00210f'
+  on-tertiary-fixed-variant: '#00522e'
+  background: '#131313'
+  on-background: '#e5e2e1'
+  surface-variant: '#353534'
+  border-subtle: '#1F1F1F'
+  surface-raised: '#111111'
+  ai-glow: '#7000FF'
+  success-muted: '#162C1F'
+  error-alert: '#FF453A'
 typography:
   display-lg:
-    fontFamily: Geist, 'Plus Jakarta Sans', sans-serif
+    fontFamily: Geist
     fontSize: 48px
     fontWeight: '700'
     lineHeight: 56px
     letterSpacing: -0.02em
   headline-lg:
-    fontFamily: Geist, 'Plus Jakarta Sans', sans-serif
+    fontFamily: Geist
     fontSize: 32px
     fontWeight: '600'
     lineHeight: 40px
     letterSpacing: -0.01em
   headline-lg-mobile:
-    fontFamily: Geist, 'Plus Jakarta Sans', sans-serif
+    fontFamily: Geist
     fontSize: 24px
     fontWeight: '600'
     lineHeight: 32px
   headline-md:
-    fontFamily: Geist, 'Plus Jakarta Sans', sans-serif
+    fontFamily: Geist
     fontSize: 20px
     fontWeight: '600'
     lineHeight: 28px
   body-lg:
-    fontFamily: Inter, sans-serif
-    fontSize: 18px
-    fontWeight: '400'
-    lineHeight: 26px
-  body-md:
-    fontFamily: Inter, sans-serif
+    fontFamily: Inter
     fontSize: 16px
     fontWeight: '400'
     lineHeight: 24px
-  body-sm:
-    fontFamily: Inter, sans-serif
+  body-md:
+    fontFamily: Inter
     fontSize: 14px
     fontWeight: '400'
     lineHeight: 20px
-  label-caps:
-    fontFamily: 'JetBrains Mono', monospace
+  label-md:
+    fontFamily: JetBrains Mono
     fontSize: 12px
     fontWeight: '500'
     lineHeight: 16px
-    letterSpacing: 0.05em
-colors:
-  background: '#080C14'
-  surface: '#0B0F17'
-  surface-raised: '#131B2A'
-  surface-card: 'rgba(15, 23, 42, 0.75)'
-  surface-variant: '#1E293B'
-  surface-hover: '#2A374E'
-  border-subtle: 'rgba(255, 255, 255, 0.08)'
-  border-muted: '#1E293B'
-  border-active: '#38BDF8'
-  primary: '#006FC7'
-  primary-glow: '#36A9F7'
-  primary-container: '#064B84'
-  secondary: '#6C3BFF'
-  secondary-container: '#4B00D4'
-  accent-teal: '#14D6A4'
-  accent-gold: '#F59E0B'
-  on-background: '#F1F5F9'
-  on-surface: '#E2E8F0'
-  on-surface-muted: '#94A3B8'
-  ai-glow: '#7000FF'
-  success: '#10B981'
-  success-muted: 'rgba(16, 185, 129, 0.15)'
-  warning: '#F59E0B'
-  error: '#EF4444'
-  error-alert: 'rgba(239, 68, 68, 0.15)'
+    letterSpacing: 0.02em
+  label-sm:
+    fontFamily: JetBrains Mono
+    fontSize: 10px
+    fontWeight: '500'
+    lineHeight: 14px
 rounded:
-  sm: 0.25rem
-  DEFAULT: 0.5rem
-  md: 0.75rem
-  lg: 1rem
-  xl: 1.5rem
+  sm: 0.125rem
+  DEFAULT: 0.25rem
+  md: 0.375rem
+  lg: 0.5rem
+  xl: 0.75rem
   full: 9999px
 spacing:
-  base: 4px
-  xs: 8px
-  sm: 16px
-  md: 24px
-  lg: 48px
-  xl: 80px
-  container-max: 1280px
+  unit: 4px
+  container-max: 1440px
+  gutter: 24px
+  margin-edge: 32px
+  sidebar-width: 260px
+  panel-ai-width: 400px
 ---
 
-# AI Agency Operating System - Design System & UI Specs
+## Brand & Style
 
-## 1. Brand & Aesthetic Strategy
-The **AI Agency Operating System** UI is engineered for high-velocity agencies, software studios, and enterprise consultancies. The visual language follows a **Dark Minimalist Enterprise AI** aesthetic inspired by *Linear, Notion, Vercel, and Stripe*.
+The design system is engineered for high-performance AI agencies where speed, precision, and enterprise-grade reliability are paramount. The brand personality is "The Invisible Powerhouse"—sophisticated, ultra-efficient, and quietly intelligent. It avoids flashy AI tropes in favor of a utilitarian, data-dense aesthetic that maximizes information density without sacrificing clarity.
 
-### Key Design Pillars:
-- **Precision Hierarchy**: Tight typographic lock-ups, mono metadata labels (`label-caps`), desaturated backgrounds (`#080C14`), and high contrast text (`#F1F5F9`).
-- **Glassmorphism & Depth**: Multi-layered backdrop blurs (`backdrop-filter: blur(16px)`), subtle 1px translucent borders (`rgba(255, 255, 255, 0.08)`), and low-contrast elevation shadows.
-- **AI-Native Feedback**: Ambient purple/electric-blue glows (`#7000FF` / `#36A9F7`), streaming pulse indicators, and instant micro-interactions.
+The visual style is a fusion of **Minimalism** and **Linear-inspired Enterprise Design**. It utilizes a "Dark Mode First" philosophy with high-contrast accents that guide the eye to AI-generated insights. Key characteristics include:
 
----
+- **Subtle Glassmorphism:** Translucent overlays and backdrop blurs are used sparingly to create a sense of depth and focus, particularly in command palettes and AI chat panels.
+- **Micro-Precision:** Borders are thin (1px), colors are desaturated with punchy accents, and typography is perfectly balanced for long-form technical reading.
+- **AI-Native Feedback:** Subtle glowing states and "streaming" animations indicate background processing and generative AI actions.
 
-## 2. Color Palette & Token Reference
+## Colors
 
-| Token Name | Hex / Value | Purpose |
-| :--- | :--- | :--- |
-| `background` | `#080C14` | Main page body canvas background |
-| `surface` | `#0B0F17` | Sidebar, top header, and sticky container background |
-| `surface-raised` | `#131B2A` | Elevated containers, dropdown menus, and command palettes |
-| `surface-card` | `rgba(15, 23, 42, 0.75)` | Glassmorphic card containers |
-| `border-subtle` | `rgba(255, 255, 255, 0.08)` | Default container borders |
-| `border-active` | `#38BDF8` | Focus ring and hover stroke state |
-| `primary` | `#006FC7` | Primary action buttons and active navigation states |
-| `primary-glow` | `#36A9F7` | Glowing accents and active indicators |
-| `secondary` | `#6C3BFF` | AI generation buttons and assistant prompts |
-| `accent-teal` | `#14D6A4` | Success status chips and positive revenue trends |
-| `accent-gold` | `#F59E0B` | High priority badges and trial/pricing highlights |
-| `error` | `#EF4444` | Danger actions, invalid fields, and system alerts |
+The palette is optimized for professional environments, favoring deep blacks and rich grays to reduce eye strain during extended use. 
 
----
+- **Primary:** A precision-tuned "Electric Blue" used for primary actions and active states, reminiscent of high-end developer tools.
+- **Secondary/Tertiary:** Used for AI-specific highlights (Purple) and financial success indicators (Green).
+- **Neutral:** A range of custom grays starting from absolute black (`#000000`) for backgrounds to a "Zinc" gray for text and borders.
+- **Surface Strategy:** Surfaces use a layered approach. The base is darkest, while modals and cards use a slightly lighter gray (`#111111`) with 1px borders to define boundaries rather than heavy shadows.
 
-## 3. Typography Hierarchy
+## Typography
 
-- **Display Face**: `Geist` / `Plus Jakarta Sans` (Sharp, executive, engineered).
-- **Body Workhorse**: `Inter` (Neutral, highly legible across all viewports).
-- **Technical Metadata**: `JetBrains Mono` (Uppercase labels, currency metrics, API keys, JSON payloads).
+Typography is used to create a clear information hierarchy in a data-heavy environment.
 
----
+- **Headlines:** Uses a technical sans-serif with tight kerning for a modern, geometric feel.
+- **Body:** Leverages a highly legible, neutral sans-serif for reading long AI-generated documents and complex tables.
+- **Technical/Metadata:** A monospaced font is used for status labels, IDs, AI tokens, and timestamps to emphasize the "Operating System" aesthetic.
+- **Scaling:** On mobile, display sizes are significantly reduced and letter spacing is neutralized to ensure readability in narrow viewports.
 
-## 4. Product Modules & Screen Inventory Mapping
+## Layout & Spacing
 
-Every module mapped to dedicated UI screen components and layout patterns:
+This design system employs a **Fluid Grid** model with a hard 4px baseline rhythm. 
 
-1. **Landing**: High-converting marketing page with hero video, interactive 18-module feature grid, pricing tier cards ($29/$79/$199), and customer ROI calculator.
-2. **Authentication**: Login, Signup, MFA verification, SSO (Google/GitHub/SAML), and Password Reset modals.
-3. **Workspace Switcher**: Organization selector drawer with team seat count and plan indicators.
-4. **Dashboard**: Executive KPI cards (MRR, active clients, generated proposals, hours saved), quick action shortcuts, active project progress bars, and real-time AI activity log.
-5. **Clients**: 360° client CRM table, organization profiles, contact info, billing history, and document archive.
-6. **Projects**: Kanban/List project views, sprint health, team avatar allocations, risk logs, and deliverable timelines.
-7. **Proposal Generator**: Multi-step AI wizard (budget, timeline, stack, requirements) with live streaming synthesis.
-8. **Proposal Preview**: Rich document reader with section navigation, client portal link generation, and PDF export.
-9. **Proposal History**: Searchable archive of past proposals with win-rate analytics and status tags.
-10. **Statement of Work (SOW)**: Legal SOW generator with scope breakdown, milestone payments, and acceptance criteria.
-11. **Contract Generator**: Master Services Agreement (MSA) builder with custom IP clauses and e-signature links.
-12. **Invoice Generator**: Line item invoice builder with tax calculation, status badges, and Stripe payment integration.
-13. **Meeting Minutes**: Transcription to action item parser with owner assignments.
-14. **Follow-up Email Generator**: AI client email drafter with tone controls (formal, persuasive, gentle reminder).
-15. **Jira Story Generator**: Requirement-to-story converter with Gherkin acceptance criteria and story point estimates.
-16. **Analytics**: Revenue charts, AI token usage metrics, proposal conversion funnels, and team capacity graphs.
-17. **Billing**: Subscription tier management, payment card update, invoice receipts, and usage caps.
-18. **Team Management**: Member list, role assignment (Owner, Admin, Manager, Dev, Client), and invitation links.
-19. **Integrations**: OAuth connection hub for Stripe, Jira, Google Calendar, Slack, Resend, and AWS S3.
-20. **AI Settings**: BYOK API key management (OpenAI, Anthropic Claude, Google Gemini), prompt templates, and guardrails.
-21. **Organization Settings**: Agency name, logo, custom domain, white-label branding, and default currency.
-22. **Admin Dashboard**: Multi-tenant tenant directory, global MRR analytics, feature flags, and system audit log.
-23. **User Profile**: Personal avatar, bio, email preferences, security credentials, and GDPR data export.
-24. **Error Pages**: Custom 404 Not Found, 403 Forbidden, 500 Internal Error, and Maintenance overlays.
+- **Sidebar Layout:** A persistent left sidebar (260px) handles primary navigation, while an optional right-side AI Chat Panel (400px) can be toggled to provide context-aware assistance.
+- **Desktop (1440px+):** 12-column grid with 24px gutters. Margins are generous to create a "focused" center column for document editors.
+- **Tablet (768px - 1024px):** Sidebar collapses into an icon-only rail or hides behind a burger menu. Gutters reduce to 16px.
+- **Mobile (<768px):** A single-column flow with 16px edge margins. The AI Assistant becomes a full-screen modal or a bottom-sheet drawer.
+
+## Elevation & Depth
+
+Depth is conveyed through **Tonal Layering** and **Subtle Glassmorphism** rather than traditional shadows.
+
+- **Level 0 (Base):** Absolute black background for the workspace.
+- **Level 1 (Cards/Panels):** Raised using a `#111111` surface with a subtle `1px solid #1F1F1F` border.
+- **Level 2 (Modals/Command Palette):** Uses a semi-transparent background (85% opacity) with a `24px` backdrop blur to separate the element from the content below.
+- **AI Focus:** Elements generated or highlighted by AI feature a very soft, outer glow using a desaturated purple tint (`#7000FF` at 10% opacity) to signify "intelligence" without being distracting.
+
+## Shapes
+
+The shape language is "Enterprise Soft." We use a small corner radius to maintain a professional, structured feel while avoiding the harshness of 0px corners.
+
+- **Standard Elements:** Buttons, inputs, and small cards use a **4px (0.25rem)** radius.
+- **Large Containers:** Main dashboard cards and AI panels use an **8px (0.5rem)** radius.
+- **Interactive States:** Hovering over list items or menu options reveals a subtle background highlight with a **4px** radius.
+
+## Components
+
+### Buttons & Inputs
+- **Primary Button:** Solid blue background with white text. High contrast, no gradient.
+- **Secondary Button:** Ghost style with a 1px border. Transitions to a subtle gray fill on hover.
+- **Inputs:** Dark background (`#0A0A0A`) with a subtle border. On focus, the border glows with the primary blue color.
+
+### AI Chat Panels
+- Use a dedicated sidebar or "Floating Action Panel" (FAP).
+- Messages are differentiated by subtle tonal shifts: User messages are dark gray, AI responses have a faint purple border on the left edge.
+- Include a "Streaming" indicator (three pulsing dots) when the AI is generating.
+
+### Modern Tables
+- Borderless rows with 1px separators. 
+- High-density spacing. 
+- Sortable headers using the monospaced label font.
+- Status indicators use "Small Pill" shapes with muted background colors (e.g., dark green background for a green text status).
+
+### Command Palette
+- Centered modal with a search input at the top.
+- Backdrop blur is essential here. 
+- List items feature keyboard shortcuts (monospaced) on the far right.
+
+### Status Indicators
+- **AI Suggested:** A small star icon next to text.
+- **Processing:** A thin, animated line at the very top of a card or page.
